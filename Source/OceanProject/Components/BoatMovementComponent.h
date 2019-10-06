@@ -27,10 +27,7 @@ protected:
 
 	
 private:
-
-	UPROPERTY(EditAnywhere)
-	FVector ForceLocation;
-	
+		
 	UPROPERTY(EditAnywhere)
 	float Mass = 1000;
 
@@ -47,7 +44,7 @@ private:
 	UPROPERTY(EditAnywhere)
 	float DragCoefficient = 16;
 
-	FVector Velocity;
+	FVector AccelerationForce;
 
 	float SteeringThrow;
 
