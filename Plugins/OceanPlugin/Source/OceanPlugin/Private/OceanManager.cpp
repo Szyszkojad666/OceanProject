@@ -155,6 +155,7 @@ FLinearColor AOceanManager::GetHeightmapPixel(float U, float V) const
 	return FLinearColor(HeightmapPixels[(PixelY - 1) * Width + PixelX - 1]);
 }
 
+
 FVector AOceanManager::GetWaveHeightValue(const FVector& location, const UWorld* World, bool HeightOnly, bool TwoIterations)
 {
 	const float SeaLevel = RootComponent->GetComponentLocation().Z;

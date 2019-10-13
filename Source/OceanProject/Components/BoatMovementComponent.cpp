@@ -37,6 +37,11 @@ void UBoatMovementComponent::MoveForward(float Value)
 	Throttle = Value;
 }
 
+void UBoatMovementComponent::SetForceLocationFromPrimitveComp(UPrimitiveComponent * PrimitiveComponent)
+{
+	 PrimitiveForceLocation = PrimitiveComponent;
+}
+
 // Called every frame
 void UBoatMovementComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
@@ -44,6 +49,11 @@ void UBoatMovementComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 	AddDrivingForce(DeltaTime);
 	
 	// ...
+}
+
+FVector UBoatMovementComponent::GetForceLocation()
+{
+	return PrimitiveForceLocation ? PrimitiveForceLocation->GetComponentLocation() : FVector(0,0,0);
 }
 
 FVector UBoatMovementComponent::CalculateAirResistance()
@@ -57,23 +67,29 @@ void UBoatMovementComponent::AddDrivingForce(float DeltaTime)
 {
 	FVector Force = GetOwner()->GetActorForwardVector() * Throttle * MaxDrivingForce;
 	Force += CalculateAirResistance();
-	FVector Acceleration = Force / Mass;
-	AccelerationForce = AccelerationForce + Acceleration * DeltaTime;
-
+	
 	UStaticMeshComponent* OwnerMesh = GetOwner()->FindComponentByClass<UStaticMeshComponent>();
 	if (OwnerMesh)
 	{
-		FVector ForceLocation =OwnerMesh->GetComponentLocation();
-		OwnerMesh->AddForceAtLocation(AccelerationForce, ForceLocation, NAME_None);
+		FVector ForceLocation = !PrimitiveForceLocation ? OwnerMesh->GetComponentLocation() : PrimitiveForceLocation->GetComponentLocation();
 		ApplyRotation(DeltaTime, SteeringThrow);
+		OwnerMesh->AddForceAtLocation(Force, ForceLocation, NAME_None);
 	}
 }
 
 void UBoatMovementComponent::ApplyRotation(float DeltaTime, float Rotation)
 {
-	float DeltaLocation = FVector::DotProduct(GetOwner()->GetActorForwardVector(), AccelerationForce) * DeltaTime; // Dot Products gives you the proportion of how close one Vector is to another
-	float DTheta = (DeltaLocation / TurningCircleRadius) * Rotation;
-	FQuat DeltaRotation(GetOwner()->GetActorUpVector(), DTheta);
-	GetOwner()->AddActorWorldRotation(DeltaRotation);
+	if (FMath::Abs(Rotation) > 0.0f)
+	{
+		float DeltaLocation = FVector::DotProduct(GetOwner()->GetActorForwardVector(), GetOwner()->GetVelocity() / 100);
+		//float RateOfTurn = GetOwner()->GetVelocity().Size() /100 / TurningCircleRadius;
+		float RateOfTurn = DeltaLocation / TurningCircleRadius;
+		float DTheta = (RateOfTurn * Rotation * DeltaTime);
+		FQuat DeltaRotation(FVector(0,0,1), DTheta);
+		GetOwner()->AddActorWorldRotation(DeltaRotation);
+		
+		UE_LOG(LogTemp, Warning, TEXT("Up Vector is %s"), *GetOwner()->GetActorUpVector().ToString());
+		//UE_LOG(LogTemp, Warning, TEXT("Rate of turn is %f"), RateOfTurn);
+	}
 }
 

@@ -6,7 +6,7 @@ public class OceanProject : ModuleRules
 {
 	public OceanProject(ReadOnlyTargetRules Target) : base(Target)
 	{
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore" });
+		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "OceanPlugin" });
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
 		

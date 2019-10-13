@@ -36,7 +36,7 @@ public class OceanPlugin : ModuleRules
     public OceanPlugin(ReadOnlyTargetRules Target) : base(Target)
     {
         PrivateIncludePaths.AddRange(new string[] { Path.Combine(ModuleDirectory, "Private") });
-        // PublicIncludePaths.AddRange(new string[] { "OceanPlugin/Public" });
+        //PublicIncludePaths.AddRange(new string[] { "OceanPlugin/Classes" });
 
         // Make sure UBT reminds us of how to keep the project IWYU compliant
         bEnforceIWYU = true;

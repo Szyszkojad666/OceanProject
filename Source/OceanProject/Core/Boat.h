@@ -12,6 +12,8 @@ class UBuoyancyForceComponent;
 class UBoatMovementComponent;
 class UPrimitiveComponent;
 class UCameraComponent;
+class UBoxComponent;
+class AOceanManager;
 
 UCLASS()
 class OCEANPROJECT_API ABoat : public APawn
@@ -22,25 +24,29 @@ public:
 	// Sets default values for this pawn's properties
 	ABoat();
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	UStaticMeshComponent* StaticMesh;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UBoxComponent* BoxCollision;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	USpringArmComponent* CameraSpringArm;
 
-	/*
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	UBuoyancyForceComponent* BuoyancyForce;
-	*/
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	UBoatMovementComponent* BoatMovement;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Setup, meta = (AllowPrivateAccess = "true"))
 	UPrimitiveComponent* EngineLocation;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	UCameraComponent* Camera;
+
+	UFUNCTION(BlueprintCallable)
+	bool IsEngineBelowSeaLevel();
 
 	virtual void Tick(float DeltaTime) override;
 
@@ -50,9 +56,12 @@ protected:
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	AOceanManager* OceanManager = nullptr;
+
 private:
 	
 	void MoveRight(float Value);
 
 	void MoveForward(float Value);
+
 };

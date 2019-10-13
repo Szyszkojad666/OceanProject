@@ -202,6 +202,7 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Ocean Manager")
 	FLinearColor GetHeightmapPixel(float U, float V) const;
+	
 
 private:
 

@@ -6,6 +6,7 @@
 #include "Components/ActorComponent.h"
 #include "BoatMovementComponent.generated.h"
 
+class UPrimitiveComponent;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class OCEANPROJECT_API UBoatMovementComponent : public UActorComponent
@@ -16,15 +17,23 @@ public:
 	// Sets default values for this component's properties
 	UBoatMovementComponent();
 
+	UFUNCTION(BlueprintCallable)
 	void MoveRight(float Value);
+
+	UFUNCTION(BlueprintCallable)
 	void MoveForward(float Value);
+	
+	UFUNCTION(BlueprintCallable)
+	void SetForceLocationFromPrimitveComp(UPrimitiveComponent* PrimitiveComponent);
 
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+
+	UFUNCTION(BlueprintCallable)
+	FVector GetForceLocation();
 
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
-
 	
 private:
 		
@@ -44,7 +53,7 @@ private:
 	UPROPERTY(EditAnywhere)
 	float DragCoefficient = 16;
 
-	FVector AccelerationForce;
+	UPrimitiveComponent* PrimitiveForceLocation{ nullptr };
 
 	float SteeringThrow;
 
