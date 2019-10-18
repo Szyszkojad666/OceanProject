@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
+#include "OceanProject.h"
 #include "GameFramework/Pawn.h"
 #include "Boat.generated.h"
 
@@ -10,10 +10,13 @@ class UStaticMeshComponent;
 class USpringArmComponent;
 class UBuoyancyForceComponent;
 class UBoatMovementComponent;
-class UPrimitiveComponent;
+class UArrowComponent;
 class UCameraComponent;
 class UBoxComponent;
 class AOceanManager;
+
+
+
 
 UCLASS()
 class OCEANPROJECT_API ABoat : public APawn
@@ -39,16 +42,28 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	UBoatMovementComponent* BoatMovement;
 	
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Setup, meta = (AllowPrivateAccess = "true"))
-	UPrimitiveComponent* EngineLocation;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UArrowComponent* EngineLocation;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	UCameraComponent* Camera;
 
+	UPROPERTY(EditDefaultsOnly)
+	class UDataTable* BoatDB;
+
+	UPROPERTY(EditDefaultsOnly)
+	FName BoatDBName;
+
 	UFUNCTION(BlueprintCallable)
 	bool IsEngineBelowSeaLevel();
 
+	UFUNCTION(BlueprintCallable, Category = "Movement")
+	void SetMovementParameters(float BoatMass, float DrivingForce, float TurningRadius, float AirDragCoefficient);
+	
 	virtual void Tick(float DeltaTime) override;
+
+	FBoatInfo* BoatInfo;
+
 
 protected:
 	// Called when the game starts or when spawned

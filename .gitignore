@@ -59,3 +59,4 @@ Saved/**
 *.target
 *.lib
 Content/Maps/IslandMap.umap
+Plugins/OceanPlugin/Binaries/Win64/UE4Editor-OceanPlugin-0001.dll

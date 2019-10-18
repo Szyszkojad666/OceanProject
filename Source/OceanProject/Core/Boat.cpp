@@ -9,8 +9,10 @@
 #include "Components/InputComponent.h"
 #include "Components/BoatMovementComponent.h"
 #include "Camera/CameraComponent.h"
+#include "Components/ArrowComponent.h"
 #include "Components/BoxComponent.h"
 #include "Engine/StaticMesh.h"
+
 
 // Sets default values
 ABoat::ABoat()
@@ -25,10 +27,11 @@ ABoat::ABoat()
 	BoxCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxCollision"));
 
 	BoatMovement = CreateDefaultSubobject<UBoatMovementComponent>(TEXT("BoatMovement"));
-	BuoyancyForce = CreateDefaultSubobject<UBuoyancyForceComponent>(TEXT("BuoyancyForce"));
 	
-	EngineLocation = CreateDefaultSubobject<UPrimitiveComponent>(TEXT("EngineLocation"));
-	EngineLocation->SetupAttachment(StaticMesh);
+	BuoyancyForce = CreateDefaultSubobject<UBuoyancyForceComponent>(TEXT("BuoyancyForce"));
+
+	EngineLocation = CreateDefaultSubobject<UArrowComponent>(TEXT("EngineLocation"));
+	BoatMovement->SetForceLocationFromPrimitveComp(EngineLocation);
 
 	CameraSpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraSpringArm"));
 	CameraSpringArm->SetupAttachment(StaticMesh);
@@ -43,6 +46,11 @@ void ABoat::BeginPlay()
 {
 	Super::BeginPlay();
 	OceanManager = BuoyancyForce->OceanManager;
+	if (BoatDB)
+	{
+		BoatInfo = BoatDB->FindRow<FBoatInfo>(BoatDBName, "");
+		SetMovementParameters(BoatInfo->BoatMass, BoatInfo->MaxDrivingForce, BoatInfo->TurningCircleRadius, BoatInfo->DragCoefficient);
+	}
 }
 
 bool ABoat::IsEngineBelowSeaLevel()
@@ -51,12 +59,20 @@ bool ABoat::IsEngineBelowSeaLevel()
 	{
 		if (OceanManager)
 		{
+			bool IsEngineBelowSeaLevel;
 			float WaveHeight = OceanManager->GetWaveHeight(GetActorLocation());
 			float EngineHeight = BoatMovement->GetForceLocation().Z;
-			return WaveHeight >= EngineHeight;
+			IsEngineBelowSeaLevel = WaveHeight >= EngineHeight;
+			UE_LOG(LogTemp, Warning, TEXT("Wave height is %d, Engine Height is %d"), WaveHeight, EngineHeight);
+			return IsEngineBelowSeaLevel;
 		}
 	}
 	return true;
+}
+
+void ABoat::SetMovementParameters(float BoatMass, float DrivingForce, float TurningRadius, float AirDragCoefficient)
+{
+	BoatMovement->SetMovementParameters(BoatMass, DrivingForce, TurningRadius, AirDragCoefficient);
 }
 
 // Called every frame
@@ -72,19 +88,17 @@ void ABoat::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	if (PlayerInputComponent)
 	{
 		PlayerInputComponent->BindAxis("MoveForward",this, &ABoat::MoveForward);
-		PlayerInputComponent->BindAxis("MoveForward",this, &ABoat::MoveRight);
+		PlayerInputComponent->BindAxis("MoveRight",this, &ABoat::MoveRight);
 	}
 }
 
 void ABoat::MoveRight(float Value)
 {
-	if (IsEngineBelowSeaLevel())
-	BoatMovement->MoveRight(Value);
+		BoatMovement->MoveRight(Value);
 }
 
 void ABoat::MoveForward(float Value)
 {
-	if (IsEngineBelowSeaLevel())
-	BoatMovement->MoveForward(Value);
+		BoatMovement->MoveForward(Value);
 }
 

@@ -56,6 +56,14 @@ FVector UBoatMovementComponent::GetForceLocation()
 	return PrimitiveForceLocation ? PrimitiveForceLocation->GetComponentLocation() : FVector(0,0,0);
 }
 
+void UBoatMovementComponent::SetMovementParameters(float BoatMass, float DrivingForce, float TurningRadius, float AirDragCoefficient)
+{
+	Mass = BoatMass;
+	MaxDrivingForce = DrivingForce;
+	TurningCircleRadius = TurningRadius;
+	DragCoefficient = AirDragCoefficient;
+}
+
 FVector UBoatMovementComponent::CalculateAirResistance()
 {
 	float AirResistanceMagnitude = -pow(GetOwner()->GetVelocity().Size(), 2) * DragCoefficient;
@@ -88,7 +96,7 @@ void UBoatMovementComponent::ApplyRotation(float DeltaTime, float Rotation)
 		FQuat DeltaRotation(FVector(0,0,1), DTheta);
 		GetOwner()->AddActorWorldRotation(DeltaRotation);
 		
-		UE_LOG(LogTemp, Warning, TEXT("Up Vector is %s"), *GetOwner()->GetActorUpVector().ToString());
+		//UE_LOG(LogTemp, Warning, TEXT("Up Vector is %s"), *GetOwner()->GetActorUpVector().ToString());
 		//UE_LOG(LogTemp, Warning, TEXT("Rate of turn is %f"), RateOfTurn);
 	}
 }

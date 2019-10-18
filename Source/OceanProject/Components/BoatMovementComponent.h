@@ -31,6 +31,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 	FVector GetForceLocation();
 
+	void SetMovementParameters(float BoatMass, float DrivingForce, float TurningRadius, float AirDragCoefficient);
+
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
@@ -42,9 +44,6 @@ private:
 
 	UPROPERTY(EditAnywhere)
 	float MaxDrivingForce = 10000;
-
-	UPROPERTY(EditAnywhere)
-	float MaxRotation = 90;
 
 	UPROPERTY(EditAnywhere)
 	float TurningCircleRadius = 11;
